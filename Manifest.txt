@@ -1,6 +1,7 @@
 .autotest
 History.txt
 Manifest.txt
+README.rdoc
 README.txt
 Rakefile
 lib/unific.rb
