@@ -15,7 +15,7 @@ available at
 
 https://github.com/jimwise/rulog 
 
-.  That gem will soon be adjusted to use Unific as its unification engine.
+).  That gem will soon be adjusted to use Unific as its unification engine.
 
 This gem is a work in progress -- in particular, more documentation is
 needed (and is a high priority).
