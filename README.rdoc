@@ -11,9 +11,9 @@ License::   2-clause BSD-Style (see LICENSE.txt)
 Unific is a ruby unification engine, an essential part of a logic
 programming environment (the whole logic programming environment this is
 taken from is available as the in-development Rulog (Ruby With Logic) gem,
-available at
+available at 
 
-    https://github.com/jimwise/rulog
+https://github.com/jimwise/rulog 
 
 .  That gem will soon be adjusted to use Unific as its unification engine.
 
