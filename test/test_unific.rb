@@ -5,6 +5,7 @@ class TestUnific < Test::Unit::TestCase
 
   def test_unify_simple
     assert Unific::unify(42, 42)
+    assert Unific::unify("abc", "abc")
     assert Unific::unify(42, Unific::Var.new)
     assert Unific::unify(Unific::Var.new, 42)
     assert Unific::unify(Unific::Var.new, Unific::Var.new)
@@ -18,6 +19,14 @@ class TestUnific < Test::Unit::TestCase
     assert Unific::unify([1, 2, 3], [1, 2, 3])
     assert !Unific::unify([1, 2, 3], [1, 2, 3, 4])
     assert Unific::unify([1, 2, 3], [1, Unific::Var.new, 3])
+    assert Unific::unify({"a" => 1}, {"a" => 1})
+    assert !Unific::unify({"a" => 2}, {"a" => 3})
+  end
+
+  def test_unify_recursive_enum
+    assert Unific::unify([["a", 1], ["b", 2]], [["a", 1], ["b", 2]])
+    assert !Unific::unify([["a", 1], ["b", 2]], [["x", 3], ["y", 4]])
+    assert Unific::unify([[1,2], [3,4], [5,6]], [[1,2], Unific::Var.new, [5,6]])
   end
 
   def test_wildcard
