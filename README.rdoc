@@ -112,7 +112,7 @@ value everywhere in the same expression:
 Binding a variable to another variable always succeeds (but is very useful
 when we start using the environments returned by unification, below).
 
-So where does the environment returned by Unific::unify comes in?  The
+So where does the environment returned by Unific::unify come in?  The
 returned environment, an object of class Unific::Env, matches ('binds') each
 variable to the value with which it was actually unified.  The method Env#[]
 can be used to see whether a variable is bound in a given environment:
@@ -130,8 +130,7 @@ Unific:
 
     jumper = Unific::Var.new("jumper")
     jumpee = Unific::Var.new("jumpee")
-    pattern = ["The", "quick", "brown", jumper, "jumped", "over", "the",
-		    "lazy", jumpee]
+    pattern = ["The", "quick", "brown", jumper, "jumped", "over", "the", "lazy", jumpee]
     sentence = "The quick brown fox jumped over the lazy dog"
     e = Unific::unify(pattern, sentence.split)
     e[jumper]
