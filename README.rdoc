@@ -49,7 +49,7 @@ In the simplest case, we can compare two values:
 
 If two Enumerables are compared, they match if (and only if) their
 corresponding members match (and thus Enumerables of different lengths do
-not unify[*]):
+not unify[1]):
 
     Unific::unify([42, "a", "b"], [42, "a", "b"])
     ==> an empty environment, which is a true value (see below)
@@ -144,7 +144,7 @@ unifications in a consistent way.
 
 Any unification can be performed against a given environment by using the
 #unify method of the class Unific::Env.  If the given environment is empty,
-this is the same as calling Unific::unify[**].  If the environment already
+this is the same as calling Unific::unify.[2]  If the environment already
 has bindings, however, the new unification will use these bindings; this
 means that any variable matches performed against the same variables must be
 consistent with the values already bound to those variables:
@@ -162,7 +162,7 @@ bound; the original environment is not modified.
 
 This is often used by chaining calls to unify (since each call returns a new
 environment);  note that this can only be done if none of the unifications
-returns `false', however[***]:
+returns `false', however[3]:
 
     a = Unific::Var.new("a")
     a = Unific::Var.new("b")
@@ -208,11 +208,18 @@ environment, either:
 
 ==== Notes
 
-[*] Unific does not currently have an equivalent of Prolog's incomplete data
-structures.  I am looking at a clean way to implement this in a future
-release.
+[1] Unific does not currently have an equivalent of Prolog's incomplete data
+     structures.  I am looking at a clean way to implement this in a future
+     release.
 
-[**] Which actually just creates an empty environment and unifies against it
+[2] Which actually just creates an empty environment and unifies against it
+
+[3] This may be revisited in a future version, but the current behavior of
+    returning false on unification failure allows the idiom of
+    
+	if e.unify(...)
+	    ...
+	end
 
 
 == INSTALL:
