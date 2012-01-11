@@ -26,6 +26,10 @@ class Unific
       not @theta.has_key? x
     end
 
+    def [] x
+      @theta[x]
+    end
+
     def extend mappings
       Env.new @theta.update mappings.reject {|k, v| k.kind_of? Wildcard or v.kind_of? Wildcard }
     end
@@ -51,11 +55,17 @@ class Unific
 
       # any remaining Var is fresh.
       if a.kind_of? Var and b.kind_of? Var
-          extend a => b
+        extend a => b
       elsif a.kind_of? Var
-          extend a => b
+        extend a => b
       elsif b.kind_of? Var
-          extend b => a
+        extend b => a
+      elsif a.kind_of? String and b.kind_of? String # strings should be treated as ground
+        if a == b
+          self
+        else
+          Unific::fail
+        end
       elsif a.kind_of? Enumerable and b.kind_of? Enumerable
         return Unific::fail unless a.size == b.size
         a.zip(b).inject(self) do |e, pair|
@@ -106,7 +116,7 @@ class Unific
         s
       when Var
         block.call(s)
-      # XXX XXX rulog had handling for Functor here, but it should work as enumerable now
+      # XXX XXX rulog had handling for Functor here, we may need to provide something similar?
       when String
         # in ruby 1.8, strings are enumerable, but we want them to be ground
         s
