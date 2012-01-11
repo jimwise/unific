@@ -38,6 +38,7 @@ class TestUnific < Test::Unit::TestCase
     assert Unific::unify(v1, Unific::_, e2);
     assert Unific::unify([1, 2, 3], Unific::_)
     assert Unific::unify([1, Unific::_, 3], [1, 2, 3])
+    assert Unific::unify([Unific::_, 3, Unific::_], [2, 3, 4])
   end
 
   def test_vars
