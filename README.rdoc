@@ -17,8 +17,8 @@ https://github.com/jimwise/rulog
 
 ).  That gem will soon be adjusted to use Unific as its unification engine.
 
-This gem is a work in progress -- in particular, more documentation is
-needed (and is a high priority).
+This gem is a work in progress -- in particular, example programs and method
+documentation are needed (and are a high priority).
 
 === What is Unfication?
 
