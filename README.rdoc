@@ -208,11 +208,11 @@ environment, either:
 
 ==== Notes
 
-  [*] Unific does not currently have an equivalent of Prolog's incomplete data
-      structures.  I am looking at a clean way to implement this in a future
-      release.
+[*] Unific does not currently have an equivalent of Prolog's incomplete data
+structures.  I am looking at a clean way to implement this in a future
+release.
 
-  [**] Which actually just creates an empty environment and unifies against it
+[**] Which actually just creates an empty environment and unifies against it
 
 
 == INSTALL:
