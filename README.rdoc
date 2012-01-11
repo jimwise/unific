@@ -221,6 +221,15 @@ environment, either:
 	    ...
 	end
 
+==== References
+
+For more information on unification, see
+
+    Sterling, Leon and Ehud Shapiro, <em>The Art of Prolog</em>, MIT Press, 1994
+
+The implementation of unification given here is heavily influenced by the
+presentation there.
+
 
 == INSTALL:
 
