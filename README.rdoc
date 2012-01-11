@@ -57,9 +57,6 @@ not unify[*]):
     Unific::unify({"a" => 1, "b" => 2}, {"a" => 1, "b" => 2})
     ==> an empty environment, which is a true value (see below)
 
-    Unific::unify([42, "a", "b"], [42, "a", "b"])
-    ==> an empty environment, which is a true value (see below)
-
     Unific::unify([42, "a", "b", "hike!"], [42, "a", "b"])
     ==> false
 
@@ -92,24 +89,37 @@ value:
 This also applies when a variable is unified as part of a larger expression
 
     x = Unific::Var.new("x")
-    Unific::unify(x, 42);
+    Unific::unify([1, x, 3], [1, 42, 3]);
     ==> a non-empty environment, which is a true value (see below)
 
 Note that as a variable unifies with any object, a single variable can also
-be unified with an entire
+be unified with an entire Enumerable
 
     x = Unific::Var.new("x")
-    Unific::unify(x, [1, 2, 3];
+    Unific::unify(x, [1, 2, 3]);
     ==> a non-empty environment, which is a true value (see below)
 
-This is where the environment returned by Unific::unify comes in -- the
+Note that when a variable matches a given value, it must match the _same_
+value everywhere in the same expression:
+
+    x = Unific::Var.new("x")
+    e = Unific::unify([x, x], [1, 2])
+    ==> false; x cannot be matched to both 1 and 2
+    x = Unific::Var.new("x")
+    e = Unific::unify([x, x], [2, 2])
+    ==> a non-empty environment, which is a true value (see below) 
+
+Binding a variable to another variable always succeeds (but is very useful
+when we start using the environments returned by unification, below).
+
+So where does the environment returned by Unific::unify comes in?  The
 returned environment, an object of class Unific::Env, matches ('binds') each
 variable to the value with which it was actually unified.  The method Env#[]
 can be used to see whether a variable is bound in a given environment:
 
     x = Unific::Var.new("x")
     y = Unific::Var.new("y")
-    e = Unific::unify(x, 42);
+    e = Unific::unify([1, x, 3], [1, 42, 3]);
     e[x]
     ==> 42
     e[y]
@@ -130,13 +140,80 @@ Unific:
 but where this becomes more interesting is when we want to perform multiple
 unifications in a consistent way.
 
+
 ==== Chaining unifications
 
+Any unification can be performed against a given environment by using the
+#unify method of the class Unific::Env.  If the given environment is empty,
+this is the same as calling Unific::unify[**].  If the environment already
+has bindings, however, the new unification will use these bindings; this
+means that any variable matches performed against the same variables must be
+consistent with the values already bound to those variables:
+
+    animal = Unific::Var.new("animal")
+    e = Unific::unify([animal, "is", "a", "mammal"], "fido is a mammal".split)
+    e[animal]
+    ==> "fido"
+    e.unify([animal, "is", "a", "bear"], "teddy is a bear".split)
+    ==> false (cannot unify, as "animal" is bound to "fido" in environment e)
+
+Note that unifying against a given environment returns a _new_ environment
+in which any additional variables matched by that unification are also
+bound; the original environment is not modified.
+
+This is often used by chaining calls to unify (since each call returns a new
+environment);  note that this can only be done if none of the unifications
+returns `false', however[***]:
+
+    a = Unific::Var.new("a")
+    a = Unific::Var.new("b")
+    e = Unific::unify([a, 1, 2], [0, 1, 2]).unify([a, b, 5], [0, 3, 5])
+    ==> a new environment where a is bound to 0, and b is bound to 3
+
+Now, it becomes useful to be able to unify to variables:
+
+     # x = y + 3
+     # y = 2
+     x = Unific::Var.new("x")
+     y = Unific::Var.new("y")
+     e1 = Unific::unify(x, [y, "+", 3])
+     e2 = e1.unify(y, 2)
+
+We can use the #instantiate method of Unific::Env to recursively substitute
+a variable as useful.  Given the above:
+
+    e2[x]
+    ==> [y, "+", 3]
+    e2[y]
+    ==> 2
+    e2.instantate x
+    ==> [2, "+", 3]
+
 ==== Wildcards
+
+Finally, the value Unific::_ is a special variable which matches any value:
+
+    x = Unific::Var.new("x")
+    e = Unific::unify([Unific::_, x, Unific::_], [1, 2, 3])
+    ==> a new environment where x is bound to 2
+
+We could not use a plain variable for this purpose, since it would have to
+evaluate to the same value whenever used in the same expression.
+
+Matching against Unific::_ does not cause any binding in the returned
+environment, either:
+
+    x = Unific::Var.new("x")
+    e = Unific::unify([Unific::_, x], [1, 2]).unify([x, Unific::_], [2, 3])
+    ==> a new environment where x is bound to 2
+
+==== Notes
 
   [*] Unific does not currently have an equivalent of Prolog's incomplete data
       structures.  I am looking at a clean way to implement this in a future
       release.
+
+  [**] Which actually just creates an empty environment and unifies against it
 
 
 == INSTALL:
