@@ -104,7 +104,7 @@ value everywhere in the same expression:
 
     x = Unific::Var.new("x")
     e = Unific::unify([x, x], [1, 2])
-    ==> false; x cannot be matched to both 1 and 2
+    ==> false; x cannot be unified with both 1 and 2 in the same expression
     x = Unific::Var.new("x")
     e = Unific::unify([x, x], [2, 2])
     ==> a non-empty environment, which is a true value (see below) 
@@ -142,12 +142,12 @@ unifications in a consistent way.
 
 ==== Chaining unifications
 
-Any unification can be performed against a given environment by using the
-#unify method of the class Unific::Env.  If the given environment is empty,
-this is the same as calling Unific::unify.[2]  If the environment already
-has bindings, however, the new unification will use these bindings; this
-means that any variable matches performed against the same variables must be
-consistent with the values already bound to those variables:
+Any unification can be performed against a given environment by using
+Env#unify method.  If the given environment is empty, this is the same as
+calling Unific::unify.[2] If the environment already has bindings, however,
+the new unification will use these bindings; this means that any variable
+matches performed against the same variables must be consistent with the
+values already bound to those variables:
 
     animal = Unific::Var.new("animal")
     e = Unific::unify([animal, "is", "a", "mammal"], "fido is a mammal".split)
@@ -179,7 +179,8 @@ Now, it becomes useful to be able to unify to variables:
      e2 = e1.unify(y, 2)
 
 We can use the #instantiate method of Unific::Env to recursively substitute
-a variable as useful.  Given the above:
+a variable until we get an uninstantiated variable, or a non-variable
+("ground") value.  Given the above, for instance:
 
     e2[x]
     ==> [y, "+", 3]
@@ -209,17 +210,17 @@ environment, either:
 ==== Notes
 
 [1] Unific does not currently have an equivalent of Prolog's incomplete data
-     structures.  I am looking at a clean way to implement this in a future
-     release.
+structures.  I am looking at a clean way to implement this in a future
+release.
 
 [2] Which actually just creates an empty environment and unifies against it
 
 [3] This may be revisited in a future version, but the current behavior of
-    returning false on unification failure allows the idiom of
+returning false on unification failure allows the idiom of
     
-	if e.unify(...)
-	    ...
-	end
+    if e.unify(...)
+      ...
+    end
 
 ==== References
 
