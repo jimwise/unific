@@ -207,6 +207,19 @@ environment, either:
     e = Unific::unify([Unific::_, x], [1, 2]).unify([x, Unific::_], [2, 3])
     ==> a new environment where x is bound to 2
 
+==== Watching Unific work
+
+The methods Env#trace and Env#untrace can be used to enable debug tracing of
+Unific operations.  Repeated calls to Env#trace increase the verbosity of
+trace output (though this has no effect in the current version), and a
+specific trace level (as an integer) may also be passed to Generator#trace
+as an optional argument.
+
+Trace output is written to STDERR.  Trace output can be disabled by
+specifying a trace level of 0, or by calling Env#untrace.  There is
+currently no way to trace operations of the new environment used by
+Unific::unify.
+
 ==== Notes
 
 [1] Unific does not currently have an equivalent of Prolog's incomplete data
