@@ -32,6 +32,7 @@ class TestUnific < Test::Unit::TestCase
   def test_wildcard
     assert Unific::unify(Unific::_, 42);
     assert Unific::unify(Unific::_, Unific::Var.new);
+    assert Unific::unify([Unific::_, 2], [1, 2]).unify([2, Unific::_], [2, 3])
     v1 = Unific::Var.new("v1")
     e1 = Unific::Env.new
     e2 = Unific::unify(v1, 42);
