@@ -20,6 +20,125 @@ https://github.com/jimwise/rulog
 This gem is a work in progress -- in particular, more documentation is
 needed (and is a high priority).
 
+=== What is Unfication?
+
+Unfication is a generalization of pattern matching -- it allows you to
+compare two patterns or values, and determine if they match, possibly
+substituting variables in each pattern to make a match possible.
+
+Two values can be unified by passing both to the Unific::unify class method.
+This method returns false if the two values cannot be unified, or a
+(possibly empty) _environment_ if they can.  For the moment, it is enough to
+remember that this environment is a true value, but soon we will see that it
+is much more.
+
+===== Simple unification
+
+So, what does it mean to unify two values?
+
+In the simplest case, we can compare two values:
+
+    Unific::unify("foo", "foo")
+    ==> succeeds, returns an empty environment, which is a true value (see below)
+
+    Unific::unify(42, 42)
+    ==> succeeds, returns an empty environment, which is a true value (see below)
+
+    Unific::unify("foo", 42)
+    ==> false
+
+If two Enumerables are compared, they match if (and only if) their
+corresponding members match (and thus Enumerables of different lengths do
+not unify[*]):
+
+    Unific::unify([42, "a", "b"], [42, "a", "b"])
+    ==> an empty environment, which is a true value (see below)
+
+    Unific::unify({"a" => 1, "b" => 2}, {"a" => 1, "b" => 2})
+    ==> an empty environment, which is a true value (see below)
+
+    Unific::unify([42, "a", "b"], [42, "a", "b"])
+    ==> an empty environment, which is a true value (see below)
+
+    Unific::unify([42, "a", "b", "hike!"], [42, "a", "b"])
+    ==> false
+
+    Unific::unify([42, 33, "b"], [42, "a", "b"])
+    ==> false
+
+this implies that nested Enumerables are unified recursively:
+
+    Unific::unify([["a", 42], ["b", 33]], [["a", 42], ["b", 33]])
+    ==> returns an empty environment, which is a true value (see below)
+
+So far, this does nothing that we could not do with the == operator... but
+there's more.
+
+==== Pattern variables
+
+A unification variable of class Unific::Var can be created with any name of
+your choice, for use in unifications:
+
+    Unific::Var.new("x")
+    ==> #<Unific::Var:0x823b920 @name="x">
+
+when used with Unific::unify, a variable will successfully unify with any
+value:
+
+    x = Unific::Var.new("x")
+    Unific::unify(x, 42);
+    ==> a non-empty environment, which is a true value (see below)
+
+This also applies when a variable is unified as part of a larger expression
+
+    x = Unific::Var.new("x")
+    Unific::unify(x, 42);
+    ==> a non-empty environment, which is a true value (see below)
+
+Note that as a variable unifies with any object, a single variable can also
+be unified with an entire
+
+    x = Unific::Var.new("x")
+    Unific::unify(x, [1, 2, 3];
+    ==> a non-empty environment, which is a true value (see below)
+
+This is where the environment returned by Unific::unify comes in -- the
+returned environment, an object of class Unific::Env, matches ('binds') each
+variable to the value with which it was actually unified.  The method Env#[]
+can be used to see whether a variable is bound in a given environment:
+
+    x = Unific::Var.new("x")
+    y = Unific::Var.new("y")
+    e = Unific::unify(x, 42);
+    e[x]
+    ==> 42
+    e[y]
+    ==> nil
+
+So far, we can perform some relatively interesting pattern matches with
+Unific:
+
+    jumper = Unific::Var.new("jumper")
+    jumpee = Unific::Var.new("jumpee")
+    pattern = ["The", "quick", "brown", jumper, "jumped", "over", "the",
+		    "lazy", jumpee]
+    sentence = "The quick brown fox jumped over the lazy dog"
+    e = Unific::unify(pattern, sentence.split)
+    e[jumper]
+    ==> "fox"
+
+but where this becomes more interesting is when we want to perform multiple
+unifications in a consistent way.
+
+==== Chaining unifications
+
+==== Wildcards
+
+  [*] Unific does not currently have an equivalent of Prolog's incomplete data
+      structures.  I am looking at a clean way to implement this in a future
+      release.
+
+
 == INSTALL:
 
 To install: 
