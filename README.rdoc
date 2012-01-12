@@ -33,7 +33,7 @@ is much more.
 So, what does it mean to unify two values?
 
 In the simplest case, we can unify two values if they are equal (according
-to +==+):
+to ==):
 
     Unific::unify("foo", "foo")
     ==> succeeds, returns an empty environment, which is a true value (see below)
