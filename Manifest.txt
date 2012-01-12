@@ -4,5 +4,6 @@ Manifest.txt
 README.rdoc
 README.txt
 Rakefile
+examples/database.rb
 lib/unific.rb
 test/test_unific.rb

@@ -1,3 +1,5 @@
+* more documentation improvements
+
 === 0.9 / 2012-01-12
 
 * unific split out from the in-development rulog (Ruby With Logic) gem
