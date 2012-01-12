@@ -32,7 +32,8 @@ is much more.
 
 So, what does it mean to unify two values?
 
-In the simplest case, we can compare two values:
+In the simplest case, we can unify two values if they are equal (according
+to +==+):
 
     Unific::unify("foo", "foo")
     ==> succeeds, returns an empty environment, which is a true value (see below)
@@ -63,6 +64,9 @@ this implies that nested Enumerables are unified recursively:
 
     Unific::unify([["a", 42], ["b", 33]], [["a", 42], ["b", 33]])
     ==> returns an empty environment, which is a true value (see below)
+
+As an exception, strings are _not_ unified recursively in this manner, even
+though they _are_ Enumerables.
 
 So far, this does nothing that we could not do with the == operator... but
 there's more.
