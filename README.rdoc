@@ -189,6 +189,18 @@ a variable until we get an uninstantiated variable, or a non-variable
     e2.instantate x
     ==> [2, "+", 3]
 
+The #instantiate method of Unific::Env is also more general than the #[]
+method -- in addition to a variable, it can take _any_ value which could be
+passed to unify, and will substitute any variables in the term.
+
+    jumper = Unific::Var.new("jumper")
+    jumpee = Unific::Var.new("jumpee")
+    pattern = ["The", "quick", "brown", jumper, "jumped", "over", "the", "lazy", jumpee]
+    sentence = "The quick brown fox jumped over the lazy dog"
+    e = Unific::unify(pattern, sentence.split)
+    e.instantiate(["The", jumpee, "chased", "the", jumper]).join(" ")
+    ==> "The dog chased the fox"
+
 ==== Wildcards
 
 Finally, the value Unific::_ is a special variable which matches any value:
@@ -209,16 +221,14 @@ environment, either:
 
 ==== Watching Unific work
 
-The methods Env#trace and Env#untrace can be used to enable debug tracing of
-Unific operations.  Repeated calls to Env#trace increase the verbosity of
-trace output (though this has no effect in the current version), and a
-specific trace level (as an integer) may also be passed to Generator#trace
-as an optional argument.
+The class method Unific::trace can be used to enable debug tracing of Unific
+operations.  Repeated calls to Unific::trace increase the verbosity of trace
+output (though this has no effect in the current version), and a specific
+trace level (as an integer) may also be passed to Unific::trace as an
+optional argument.
 
 Trace output is written to STDERR.  Trace output can be disabled by
-specifying a trace level of 0, or by calling Env#untrace.  There is
-currently no way to trace operations of the new environment used by
-Unific::unify.
+specifying a trace level of 0, or by calling Unific::untrace.
 
 ==== Notes
 
