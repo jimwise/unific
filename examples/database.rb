@@ -1,6 +1,9 @@
+#!/usr/bin/ruby
+
 require 'rubygems'
 require 'unific'
 
+KEYS = [ :first, :last, :age, :occupation ]
 DATA = [
         { :first => "John", :last => "Smith", :age => 40, :occupation => "yak shaver" },
         { :first => "Joe",  :last => "Bloe",  :age => 30, :occupation => "cat herder" },
@@ -8,10 +11,26 @@ DATA = [
         { :first => "John", :last => "NotSmith", :age => 90, :occupation => "inspirational speaker" }
        ]
 
+# q is a hash with one or more values filled in
 def query q
-  r = DATA.select {|d| Unific::unify d, q}
+  q2 = q.clone
+  KEYS.each {|k| q2[k] ||= Unific::_}
+  r = DATA.select {|d| Unific::unify d, q2}
 end
 
-johns = query :first => "John", :last => Unific::_, :age => Unific::_, :occupation => Unific::_
+johns = query :first => "John"
+forties = query :age => 40
+john_forties = query :first => "John", :age => 40
 
+puts "People named John:"
 johns.each {|d| puts "found: #{d[:first]} #{d[:last]}"}
+
+puts
+
+puts "Forty-year-olds:"
+forties.each {|d| puts "found: #{d[:first]} #{d[:last]}"}
+
+puts
+
+puts "Forty-year-old people named John:"
+john_forties.each {|d| puts "found: #{d[:first]} #{d[:last]}"}
