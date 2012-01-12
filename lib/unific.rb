@@ -1,16 +1,28 @@
 require 'singleton'
 
-class Unific
+module Unific
+
   VERSION = '0.9.0'
 
+  # An environment (set of variable bindings) resulting from unification
   class Env
     @@trace = 0
 
+    # Allocate a new environment.  Usually not needed -- use Unific::unify, instead.
+    #
+    # The new environment will be empty unless a hash of variable bindings
+    # is included.  Use this with care.
     def initialize prev = {}
       @theta = prev.clone
     end
 
-    def self.trace lvl
+    # Turn on tracing (to STDERR) of Unific operations
+    #
+    # intended for use by Unific::trace
+    #
+    # The optional level argument sets the verbosity -- if not passed, each
+    # call to this method increases verbosity
+    def self.trace lvl #:nodoc:
       if lvl
         @@trace = lvl
       else
@@ -18,19 +30,25 @@ class Unific
       end
     end
 
-    def self.untrace
+    # Turn off tracing (to STDERR) of Unific operations
+    #
+    # intended for use by Unific::trace
+    def self.untrace #:nodoc:
       @@trace = 0
     end
 
+    # Return whether a given variable is fresh (not bound) in this environment
     def fresh? x
       not @theta.has_key? x
     end
 
+    # Return the binding of a variable in this environment, or +nil+ if it is unbound
     def [] x
       @theta[x]
     end
 
-    def extend mappings
+    # private helper to extend this environment with one or more new mappings
+    def _extend mappings
       Env.new @theta.update mappings.reject {|k, v| k.kind_of? Wildcard or v.kind_of? Wildcard }
     end
 
@@ -38,14 +56,22 @@ class Unific
       "{ " + @theta.map{|k, v| "#{k} => #{v}"}.join(", ") + "} "
     end
 
-    # returns either `false' or the MGU of the two terms, which can be
-    #    a.) vars
-    #    b.) wildcards
-    #    c.) any ruby Enumerable, in which case unification recurs on the members
-    #    d.) any other ruby object (as a ground term)
+    # Unify two values against this environment, returning a new environment
     #
-    # this is a functional interface -- a new env is returned with the MGU, as taken
-    # against the bindings already in this env
+    # If the two values cannot be unified, `false' is returned.  If they can, a _new_
+    # environment is returned which is this environment extended with any new bindings
+    # created by unification.
+    # 
+    # Each value to unify can be
+    #
+    # a. a Unific::Var variable
+    # b. the wildcard variable, Unific::_
+    # c. any ruby Enumerable except a String, in which case unification recurs on the members
+    # e. a String or any other ruby object (as a ground term -- unification succeeds
+    # if the two are equal (with '=='))
+    #
+    # In logic programming terms, the returned env is the Most General Unifier (MGU) of the two
+    # terms
     def unify a, b
       puts "unifying #{a.to_s} and #{b.to_s}" if @@trace > 0
 
@@ -55,11 +81,11 @@ class Unific
 
       # any remaining Var is fresh.
       if a.kind_of? Var and b.kind_of? Var
-        extend a => b
+        _extend a => b
       elsif a.kind_of? Var
-        extend a => b
+        _extend a => b
       elsif b.kind_of? Var
-        extend b => a
+        _extend b => a
       elsif a.kind_of? String and b.kind_of? String # strings should be treated as ground
         if a == b
           self
@@ -80,7 +106,11 @@ class Unific
       end
     end
 
-    # substitute any bound variables in an arbitrary expression, using traversal rules of traverse
+    # Given a value, substitute any variables present in the term.
+    #
+    # If the passed value is a Ruby Enumerable other than a String, recurs on the members of
+    # the Enumerable.  Unlike #[], also repeatedly substitutes each variable until it gets a
+    # ground (non-variable) term or a free variable
     def instantiate s
       _traverse s do |v|
         if fresh? v
@@ -91,8 +121,11 @@ class Unific
       end
     end
 
-    # alpha-rename an expression (all variables get new variables of same name.  useful, e.g. to give
-    # each Rule its own private copy of all of its variables.
+    # Perform alpha renaming on an expression
+    #
+    # Alpha-renaming an expression replaces all fresh variables in the
+    # expression with new variables of the same name.  This is used by rulog
+    # to to give each Rule its own private copy of all of its variables.
     def rename s
       _traverse s do |v|
         if fresh? v
@@ -105,7 +138,7 @@ class Unific
       end
     end
 
-    # helper for instantiate and rename
+    # private helper for instantiate and rename
     # given an argument, if it is an:
     #   a.) var, replace it with the result of calling a block on it
     #   b.) enumerable, recur, instantiating it's members
@@ -126,45 +159,85 @@ class Unific
         s
       end
     end
+
+    private :_extend, :_traverse
   end
 
+  # Unify two terms against an empty environment
+  # 
+  # See README.rdoc or Env#unify for details
+  #
+  # If the two values cannot be unified, `false' is returned.  If they can, a _new_
+  # environment is returned which is this environment extended with any new bindings
+  # created by unification.
+  #--
+  # XXX This documentation must be kept in sync with that for Env#unify
+  #++
   def self.unify a, b, env = Env.new
     env.unify a, b
   end
 
+  # A unification variable
   class Var
     attr_accessor :name
 
+    # Create a new variable
+    #
+    # The optional argument provides a name for use in printing the variable
     def initialize name = "new_var"
       @name = name
       self.freeze
     end
     
+    # Return a string representing a variable
+    #
+    # A variable named"foo" is presented as as "?foo"
     def to_s
       "?#{@name}"
     end
   end
 
+  # The unique Unific wildcard variable
   class Wildcard < Var
     include Singleton
 
-    def initialize
+    # The wildcard variable is named "_"
+    def initialize #:nodoc:
       super "_"
     end
 
+    # The wildcard variable is presented as "_"
     def to_s
       "_"
     end
 
+    # The wildcard variable matches any value
     def == x
       true
     end
   end
 
+  # Return the Unific wildcard variable
   def self._
     Unific::Wildcard.instance
   end
 
+  # Turn on tracing (to STDERR) of Unific operations
+  #
+  # The optional level argument sets the verbosity -- if not passed, each
+  # call to this method increases verbosity
+  def self.trace lvl = false
+    Unific::Env::trace lvl
+  end
+
+  # Turn off tracing (to STDERR) of Unific operations
+  def self.untrace
+    Unific::Env::untrace untrace
+  end
+
+  # Return false
+  #
+  # Placeholder for possible future expansion of failed unification behavior
   def self.fail
     false
   end
