@@ -1,3 +1,6 @@
+* Added a simple example program -- a mock database using unification for
+  query
+
 * more documentation improvements
 
 === 0.9 / 2012-01-12
