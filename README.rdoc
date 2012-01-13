@@ -16,6 +16,16 @@ the in-development Rulog[http://github.com/jimwise/rulog]] (Ruby With Logic)
 gem), but can also be useful on its own as a pattern matching engine which
 can enforce consistency across multiple matches.
 
+=== How to Use This Gem
+
+To get started, include this gem using
+
+    require 'rubygems'
+    require 'unific'
+
+This gem provides the Unific module.  This module provides several methods
+which implement a unification engine.
+
 === What is Unfication?
 
 Unfication is a generalization of pattern matching -- it allows you to
