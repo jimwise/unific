@@ -2,7 +2,7 @@ require 'singleton'
 
 module Unific
 
-  VERSION = '0.9'
+  VERSION = '0.10'
 
   # An environment (set of variable bindings) resulting from unification
   class Env
@@ -138,6 +138,12 @@ module Unific
       end
     end
 
+    # forward definition, see comment below
+    module ::Rulog #:nodoc:
+    end
+    class ::Rulog::Functor #:nodoc:
+    end
+
     # private helper for instantiate and rename
     # given an argument, if it is an:
     #   a.) var, replace it with the result of calling a block on it
@@ -149,7 +155,8 @@ module Unific
         s
       when Var
         block.call(s)
-      # XXX XXX rulog had handling for Functor here, we may need to provide something similar?
+      when Rulog::Functor # XXX XXX messy -- this is the only place Unific knows about the rest of Rulog
+        Rulog::Functor.new _traverse(s.f, &block), *_traverse(s.args, &block)
       when String
         # in ruby 1.8, strings are enumerable, but we want them to be ground
         s
