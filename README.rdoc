@@ -288,8 +288,8 @@ and generate the RDoc.
 
 == REQUIREMENTS:
 
-This gem should run fine under Ruby 1.8.7 or 1.9.  If you experience any
-issues, please let me know.
+This gem is tested and should run fine under Ruby 1.8.7 or 1.9.  If you
+experience any issues, please let me know.
 
 == LICENSE:
 
