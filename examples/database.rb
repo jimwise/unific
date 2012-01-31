@@ -13,10 +13,13 @@ DATA = [
 
 # q is a hash with one or more values filled in
 def query q
-  q2 = q.clone
-  KEYS.each {|k| q2[k] ||= Unific::_}
+  q2 = {}
+# note that as of Ruby 1.9, order matters
+  KEYS.each {|k| q2[k] = q[k] = Unific::_}
   r = DATA.select {|d| Unific::unify d, q2}
 end
+
+Unific::trace if ENV['UNIFIC_TRACE']
 
 johns = query :first => "John"
 forties = query :age => 40

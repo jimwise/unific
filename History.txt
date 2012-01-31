@@ -1,3 +1,6 @@
+* Update database example to work with Ruby 1.9 (where hashes keep insertion
+  order).
+
 === 0.10 / 2012-01-30
 
 * Added a simple example program -- a mock database using unification for
