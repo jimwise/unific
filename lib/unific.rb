@@ -2,7 +2,7 @@ require 'singleton'
 
 module Unific
 
-  VERSION = '0.10'
+  VERSION = '0.11'
 
   # An environment (set of variable bindings) resulting from unification
   class Env
