@@ -1,5 +1,9 @@
+=== 0.11 / 2013-03-30
+
 * Update database example to work with Ruby 1.9 (where hashes keep insertion
   order).
+
+* Minor documentation tweaks, including mentioning support for Ruby 2.0.0
 
 === 0.10 / 2012-01-30
 

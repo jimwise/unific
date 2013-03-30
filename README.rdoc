@@ -12,7 +12,7 @@ Unific is a ruby unification engine.
 
 A unification engine is an essential part of a logic programming environment
 (the whole logic programming environment this is taken from is available as
-the in-development Rulog[http://github.com/jimwise/rulog]] (Ruby With Logic)
+the in-development Rulog[http://github.com/jimwise/rulog] (Ruby With Logic)
 gem), but can also be useful on its own as a pattern matching engine which
 can enforce consistency across multiple matches.
 
@@ -20,7 +20,7 @@ can enforce consistency across multiple matches.
 
 To get started, include this gem using
 
-    require 'rubygems'
+    require 'rubygems' # only need on Ruby 1.8.x, but harmless elsewhere
     require 'unific'
 
 This gem provides the Unific module.  This module provides several methods
@@ -288,8 +288,8 @@ and generate the RDoc.
 
 == REQUIREMENTS:
 
-This gem is tested and should run fine under Ruby 1.8.7 or 1.9.  If you
-experience any issues, please let me know.
+This gem is tested and should run fine under Ruby 1.8.7, 1.9.x, or 2.0.x.
+If you experience any issues, please let me know.
 
 == LICENSE:
 
