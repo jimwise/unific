@@ -16,8 +16,8 @@ require 'hoe'
 
 Hoe.spec 'unific' do
 
-  developer('Jim Wise', 'jwise@draga.com')
-
+  developer 'Jim Wise', 'jwise@draga.com'
+  license 'Two Clause BSD'
 end
 
 # vim: syntax=ruby
