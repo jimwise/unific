@@ -1,5 +1,4 @@
 require 'singleton'
-require 'set'
 
 module Unific
 
