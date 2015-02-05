@@ -1,4 +1,5 @@
 require 'singleton'
+require 'set'
 
 module Unific
 
@@ -136,6 +137,17 @@ module Unific
           instantiate @theta[v]
         end
       end
+    end
+
+    # Return a list of variables 
+    def variables s
+      res = []
+      seen = Set.new
+      _traverse s do |v|
+        res << v unless seen.include? v
+        seen << v
+      end
+      res
     end
 
     # forward definition, see comment below
