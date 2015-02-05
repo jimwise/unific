@@ -3,7 +3,7 @@ require 'set'
 
 module Unific
 
-  VERSION = '0.11'
+  VERSION = '0.12'
 
   # An environment (set of variable bindings) resulting from unification
   class Env
@@ -139,15 +139,17 @@ module Unific
       end
     end
 
-    # Return a list of variables 
+    # Return just the variables from an expression, as a flat array
     def variables s
       res = []
-      seen = Set.new
       _traverse s do |v|
-        res << v unless seen.include? v
-        seen << v
+        res << v
       end
-      res
+      res.uniq
+    end
+
+    def bindings
+      @theta.keys
     end
 
     # forward definition, see comment below
