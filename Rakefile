@@ -15,9 +15,8 @@ require 'hoe'
 # Hoe.plugin :rubyforge
 
 Hoe.spec 'unific' do
-
   developer 'Jim Wise', 'jwise@draga.com'
-  license 'Two Clause BSD'
+  license 'BSD-2-Clause'
 end
 
 # vim: syntax=ruby
